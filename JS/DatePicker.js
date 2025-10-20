@@ -44,16 +44,19 @@ class ULDatePicker extends HTMLElement {
     _i18n = {
         "zh-TW":
         {
+            yearSuffix: "年",
             months: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
             weekdays: ["日", "一", "二", "三", "四", "五", "六"],
             today: "今天"
         },
         "en": {
+            yearSuffix: "",
             months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
             weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
             today: "Today"
         },
         "ja": {
+            yearSuffix: "年",
             months: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
             weekdays: ["日", "月", "火", "水", "木", "金", "土"],
             today: "今日"
@@ -87,6 +90,28 @@ class ULDatePicker extends HTMLElement {
             if (side === "left") this._currentLeft.setMonth(month);
             else this._currentRight.setMonth(month);
             this[`_viewMode${this._uc(side)}`] = "date";
+            this._animateRender();
+            return;
+        }
+
+        // 年份切換
+        if (t.classList.contains("prev-left") && this._viewModeLeft === "year") {
+            this._yearStartLeft -= 12;
+            this._animateRender();
+            return;
+        }
+        if (t.classList.contains("next-left") && this._viewModeLeft === "year") {
+            this._yearStartLeft += 12;
+            this._animateRender();
+            return;
+        }
+        if (t.classList.contains("prev-right") && this._viewModeRight === "year") {
+            this._yearStartRight -= 12;
+            this._animateRender();
+            return;
+        }
+        if (t.classList.contains("next-right") && this._viewModeRight === "year") {
+            this._yearStartRight += 12;
             this._animateRender();
             return;
         }
@@ -195,6 +220,7 @@ class ULDatePicker extends HTMLElement {
     _renderMonthView(current, side) {
         const lang = this._i18n[this._lang];
         const year = current.getFullYear(), month = current.getMonth();
+        const yearStr = this._i18n[this.year];
         const viewMode = this[`_viewMode${this._uc(side)}`];
         if (viewMode === "year") return this._renderYearView(year, side);
         if (viewMode === "month") return this._renderMonthSelector(year, month, side);
@@ -202,7 +228,15 @@ class ULDatePicker extends HTMLElement {
         // 日期層
         const firstDay = new Date(year, month, 1), lastDay = new Date(year, month + 1, 0);
         const startWeekday = firstDay.getDay(), daysInMonth = lastDay.getDate(), todayStr = this._formatDate(this._today);
-        let html = `<div class="header"><button class="prev-${side}">&laquo;</button><span class="year-label" data-side="${side}">${year}</span><span class="month-label" data-side="${side}">${lang.months[month]}</span><button class="next-${side}">&raquo;</button></div><div class="weekdays">${lang.weekdays.map(w => `<div>${w}</div>`).join("")}</div><div class="days">`;
+        let html = `
+            <div class="header">
+                <button class="prev-${side}">&laquo;</button>
+                <span class="year-label" data-side="${side}">${year}${lang.yearSuffix}</span>
+                <span class="month-label" data-side="${side}">${lang.months[month]}</span>
+                <button class="next-${side}">&raquo;</button>
+            </div>
+            <div class="weekdays">${lang.weekdays.map(w => `<div>${w}</div>`).join("")}</div>
+            <div class="days">`;
         for (let i = 0; i < startWeekday; i++) html += `<div class="empty"></div>`;
         for (let d = 1; d <= daysInMonth; d++) {
             const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
@@ -299,7 +333,7 @@ template.innerHTML = `
         @keyframes fadeOut{from{opacity:1;}to{opacity:0;}}
     </style>
     <div class="container">
-      <span class="label">Select Date</span>
+      <span class="label">選取日期</span>
       <span class="icon">📅</span>
     </div>
     <div class="calendar"></div>
