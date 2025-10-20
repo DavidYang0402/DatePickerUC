@@ -161,9 +161,3 @@ UCDatePicker 目標是提供：
 | v5 | 加入 Today 按鈕與 min/max 限制 |
 | v4 | 支援語系與範圍選擇 |
 | v3 | 初始版本，支援單日選取 |
-
----
-
-## 🧩 授權
-
-MIT License © 2025 — Developed for enterprise-grade web systems.
