@@ -1,21 +1,80 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <title>Custom DatePicker</title>
+  <title>UCDatePicker 測試</title>
+  <script type="module" src="../JS/DatePicker.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 30px;
+    }
+    section {
+      margin-bottom: 40px;
+    }
+  </style>
 </head>
 <body>
-  <h3>Mode="Default"</h3>
-  <uc-datepicker></uc-datepicker>
 
-  <h3>Mode="range" Language="English"</h3>
-  <uc-datepicker lang="en" mode="range"></uc-datepicker>
-  
-  <h3>Mode="range" Language="Japan" StartDate="2025-10-1" EndDate="2026-10-1"</h3>
-  <uc-datepicker lang="ja" mode="range" min="2025-10-1" max="2026-10-1"></uc-datepicker>
+  <h2>🧭 UCDatePicker 測試頁</h2>
 
-  <script src="../JS/DatePicker.js"></script>
-  <script type="text/javascript">
+  <section>
+    <h3>1️⃣ 單一日期 (single)</h3>
+    <uc-datepicker id="pickerSingle"
+                   mode="single"
+                   name="singleDate"
+                   min="2025-10-01"
+                   max="2025-11-01"
+                   lang="zh-TW"></uc-datepicker>
+  </section>
+
+  <section>
+    <h3>2️⃣ 範圍日期 (range)</h3>
+    <uc-datepicker id="pickerRange"
+                   mode="range"
+                   name="rangeDate"
+                   lang="ja"
+                   min="2025-10-01"
+                   max="2025-11-01"></uc-datepicker>
+  </section>
+
+  <section>
+    <h3>3️⃣ 用 JS 操作測試</h3>
+    <button id="btnGet">取值</button>
+    <button id="btnSet">設定為 2025-10-15</button>
+    <button id="btnSetRange">設定範圍 10/10 ~ 10/20</button>
+  </section>
+
+  <script>
+    const single = document.getElementById("pickerSingle");
+    const range = document.getElementById("pickerRange");
+
+    // 監聽事件
+    single.addEventListener("date-change", e => {
+      console.log("📅 單日改變:", e.detail);
+    });
+
+    range.addEventListener("date-change", e => {
+      console.log("📅 範圍改變:", e.detail);
+    });
+
+    // 測試取得值
+    document.getElementById("btnGet").addEventListener("click", () => {
+      console.log("Single:", single.value);
+      console.log("Range:", range.value);
+      console.log("Hidden(single):", document.querySelector("input[name='singleDate']").value);
+      console.log("Hidden(range):", document.querySelector("input[name='rangeDate']").value);
+    });
+
+    // 測試設定值
+    document.getElementById("btnSet").addEventListener("click", () => {
+      single.value = "2025-10-15";
+    });
+
+    document.getElementById("btnSetRange").addEventListener("click", () => {
+      range.value = { start: "2025-10-10", end: "2025-10-20" };
+    });
   </script>
+
 </body>
 </html>
