@@ -120,8 +120,14 @@ class ULDatePicker extends HTMLElement {
                         this._selectedStart = todayStr;
                     } else this._selectedEnd = todayStr;
                 }
-                this._container.textContent = this._selectedStart + (this._selectedEnd ? " ~ " + this._selectedEnd : "");
-                this.dispatchEvent(new CustomEvent("date-change", { detail: { start: this._selectedStart, end: this._selectedEnd } }));
+                this._container.querySelector(".label").textContent =
+                    this._selectedStart + (this._selectedEnd ? " ~ " + this._selectedEnd : "");
+                this.dispatchEvent(new CustomEvent("date-change", {
+                    detail: {
+                        start: this._selectedStart,
+                        end: this._selectedEnd
+                    }
+                }));
             }
             this._animateRender();
             return;
@@ -134,7 +140,7 @@ class ULDatePicker extends HTMLElement {
             if (!dateStr || (this._min && dateObj < this._min) || (this._max && dateObj > this._max)) return;
             if (this._mode === "single") {
                 this._selectedStart = dateStr;
-                this._container.textContent = dateStr;
+                this._container.querySelector(".label").textContent = dateStr;
                 this._calendar.classList.remove("open");
             } else {
                 if (!this._selectedStart || (this._selectedStart && this._selectedEnd)) {
@@ -146,7 +152,8 @@ class ULDatePicker extends HTMLElement {
                         this._selectedStart = dateStr;
                     } else this._selectedEnd = dateStr;
                 }
-                this._container.textContent = this._selectedStart + (this._selectedEnd ? " ~ " + this._selectedEnd : "");
+                this._container.querySelector(".label").textContent =
+                    this._selectedStart + (this._selectedEnd ? " ~ " + this._selectedEnd : "");
             }
             this.dispatchEvent(new CustomEvent("date-change", {
                 detail: this._mode === "single" ? this._selectedStart : { start: this._selectedStart, end: this._selectedEnd }
@@ -238,12 +245,39 @@ const template = document.createElement("template");
 template.innerHTML = `
     <style>
         :host{position:relative;display:inline-block;font-family:sans-serif;}
-        .container{border:1px solid #ccc;border-radius:8px;padding:6px 10px;background:#fff;cursor:pointer;user-select:none;min-width:160px;}
+        .container {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          padding: 6px 10px;
+          background: #fff;
+          cursor: pointer;
+          user-select: none;
+          min-width: 160px;
+        }
+        .icon {
+          font-size: 16px;
+          color: #007bff;
+          pointer-events: none;
+        }
         .calendar{display:none;position:absolute;top:110%;left:0;background:white;border:1px solid #ccc;border-radius:8px;padding:10px;z-index:100;box-shadow:0 4px 10px rgba(0,0,0,0.1);transition:opacity 0.15s ease-in-out;min-width:240px;}
         .calendar.open{display:block;}
         .dual{display:flex;gap:10px;min-width:480px;}
-        @media(max-width:600px){.dual{flex-direction:column;min-width:auto;}.panel{min-width:100%;}}
+        @media(max-width:600px){
+            .dual{
+              flex-direction:column;
+              min-width:auto;
+            }
+            .panel{min-width:100%;}
+        }
         .panel{flex:1;min-width:220px;}
+        .dual .panel:first-child {
+            border-right: 1px solid #ddd;
+            padding-right: 10px;
+            margin-right: 10px;
+        }
         .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
         .year-label,.month-label{cursor:pointer;font-weight:bold;}
         .header button{background:none;border:none;cursor:pointer;font-size:16px;padding:4px 8px;}
@@ -264,7 +298,10 @@ template.innerHTML = `
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
         @keyframes fadeOut{from{opacity:1;}to{opacity:0;}}
     </style>
-    <div class="container">Select Date</div>
+    <div class="container">
+      <span class="label">Select Date</span>
+      <span class="icon">📅</span>
+    </div>
     <div class="calendar"></div>
 `;
 
